@@ -28,13 +28,29 @@ Check the Prerequisites. The download links for this practical are:
 - Data: [Market-1501](http://188.138.127.15:81/Datasets/Market-1501-v15.09.15.zip)
 
 ## Part 1: Training
-### Part 1.1: Prepare Data
+### Part 1.1: Prepare Data Folder
 You may notice that the downloaded folder is organized as:
 ```
-
+├── Market/
+│   ├── bounding_box_test/          /* Files for testing (candidate images pool)
+│   ├── bounding_box_train/         /* Files for training 
+│   ├── gt_bbox/                    /* We do not use it 
+│   ├── gt_query/                   /* Files for multiple query testing 
+│   ├── query/                      /* Files for testing (query images)
+│   ├── readme.txt
 ```
-Open and edit the script `prepare.py` in the editor. Change the fifth line in `prepare.py` to your download path. This script contains the code to prepare the data for the training.
-
+Open and edit the script `prepare.py` in the editor. Change the fifth line in `prepare.py` to your download path, such as `\home\zzd\Download\Market`. Run this script.
+```bash
+python prepare.py
+```
+After runining, we create a subfolder called `pytorch` under download folder. 
+```
+├── Market/
+│   ├── pytorch/
+│       ├── train/
+│       ├── test/
+│       ├── query/
+```
 ## Part 2: Extracting feature
 
 ## Part 3: Evaluation

@@ -63,7 +63,7 @@ After runining, we create a subfolder called `pytorch` under the download folder
 │       ├── gallery/                 /* gallery files  
 ```
 
-In every subdir, such as `pytorch/train/0002`, images with the same ID are arranged in one folder.
+In every subdir, such as `pytorch/train/0002`, images with the same ID are arranged in the folder.
 Now we have successfully prepared the data for `torchvision` to read the data. 
 
 ```diff
@@ -71,9 +71,9 @@ Now we have successfully prepared the data for `torchvision` to read the data.
 ```
 
 ### Part 1.2: Build Neural Network
-We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns in ImageNet[1].
+We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns from ImageNet[1].
 
-In pytorch, we can easily import them by two lines.
+In pytorch, we can easily import them by two lines. For example,
 ```python
 from torchvision import models
 model = models.resnet50(pretrained=True)

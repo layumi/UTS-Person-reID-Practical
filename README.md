@@ -39,18 +39,36 @@ You may notice that the downloaded folder is organized as:
 │   ├── query/                      /* Files for testing (query images)
 │   ├── readme.txt
 ```
-Open and edit the script `prepare.py` in the editor. Change the fifth line in `prepare.py` to your download path, such as `\home\zzd\Download\Market`. Run this script.
+Open and edit the script `prepare.py` in the editor. Change the fifth line in `prepare.py` to your download path, such as `\home\zzd\Download\Market`. Run this script in the terminal.
 ```bash
 python prepare.py
 ```
-After runining, we create a subfolder called `pytorch` under download folder. 
+After runining, we create a subfolder called `pytorch` under the download folder. 
 ```
 ├── Market/
+│   ├── bounding_box_test/          /* Files for testing (candidate images pool)
+│   ├── bounding_box_train/         /* Files for training 
+│   ├── gt_bbox/                    /* We do not use it 
+│   ├── gt_query/                   /* Files for multiple query testing 
+│   ├── query/                      /* Files for testing (query images)
+│   ├── readme.txt
 │   ├── pytorch/
-│       ├── train/
-│       ├── test/
-│       ├── query/
+│       ├── train/                   /* train 
+│           ├── 0002
+|           ├── 0007
+|           ...
+│       ├── val/                     /* val
+│       ├── train_all/               /* train+val      
+│       ├── query/                   /* query files  
+│       ├── gallery/                 /* gallery files  
 ```
+
+In every subdir, such as `pytorch/train/0002`, images with the same ID are arranged in one folder.
+Now we have successfully prepared the data for `torchvision` to read the data. 
+
+### Part 1.2: Training
+
+
 ## Part 2: Extracting feature
 
 ## Part 3: Evaluation

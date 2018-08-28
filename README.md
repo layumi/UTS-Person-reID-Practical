@@ -66,7 +66,17 @@ After runining, we create a subfolder called `pytorch` under the download folder
 In every subdir, such as `pytorch/train/0002`, images with the same ID are arranged in one folder.
 Now we have successfully prepared the data for `torchvision` to read the data. 
 
-### Part 1.2: Training
+```diff
++ Quick Question. How to recognize the images of the same ID?
+```
+
+### Part 1.2: Build Neural Network
+We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns.
+
+In pytorch, we can easily import them by one line.
+
+
+### Part 1.3: Training
 
 
 ## Part 2: Extracting feature

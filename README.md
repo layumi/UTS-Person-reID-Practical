@@ -71,10 +71,15 @@ Now we have successfully prepared the data for `torchvision` to read the data.
 ```
 
 ### Part 1.2: Build Neural Network
-We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns.
+We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns in ImageNet[1].
 
-In pytorch, we can easily import them by one line.
+In pytorch, we can easily import them by two lines.
+```python
+from torchvision import models
+model = models.resnet50(pretrained=True)
+```
 
+But we need to modify the networks a little bit.
 
 ### Part 1.3: Training
 
@@ -82,5 +87,7 @@ In pytorch, we can easily import them by one line.
 ## Part 2: Extracting feature
 
 ## Part 3: Evaluation
+
+[1] Deng, Jia, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. "Imagenet: A large-scale hierarchical image database." In Computer Vision and Pattern Recognition, 2009. CVPR 2009. IEEE Conference on, pp. 248-255. Ieee, 2009.
 
 

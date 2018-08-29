@@ -79,7 +79,39 @@ from torchvision import models
 model = models.resnet50(pretrained=True)
 ```
 
-But we need to modify the networks a little bit.
+But we need to modify the networks a little bit. There are 751 classes (different people) in Market-1501, which is different with 1,000 classes in ImageNet. So here we change the model to use our classifier.
+
+```python
+# Define the ResNet50-based Model
+class ft_net(nn.Module):
+
+    def __init__(self, class_num ):
+        super(ft_net, self).__init__()
+        model_ft = models.resnet50(pretrained=True) #load the model
+        # avg pooling to global pooling
+        model_ft.avgpool = nn.AdaptiveAvgPool2d((1,1))
+        self.model = model_ft
+        self.classifier = ClassBlock(2048, class_num) #define our classifier.
+
+    def forward(self, x):
+        x = self.model.conv1(x)
+        x = self.model.bn1(x)
+        x = self.model.relu(x)
+        x = self.model.maxpool(x)
+        x = self.model.layer1(x)
+        x = self.model.layer2(x)
+        x = self.model.layer3(x)
+        x = self.model.layer4(x)
+        x = self.model.avgpool(x)
+        x = torch.squeeze(x)
+        x = self.classifier(x) #use our classifier.
+        return x
+```
+
+```diff
++ Quick Question. Why we use AdaptiveAvgPool2d? What is the difference between the AvgPool2d and AdaptiveAvgPool2d?
+```
+
 
 ### Part 1.3: Training
 

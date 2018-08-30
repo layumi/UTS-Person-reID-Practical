@@ -78,6 +78,10 @@ In pytorch, we can easily import them by two lines. For example,
 from torchvision import models
 model = models.resnet50(pretrained=True)
 ```
+You can simply check the structure of the model by:
+```python
+print(model)
+```
 
 But we need to modify the networks a little bit. There are 751 classes (different people) in Market-1501, which is different with 1,000 classes in ImageNet. So here we change the model to use our classifier.
 
@@ -88,7 +92,7 @@ from torchvision import models
 
 # Define the ResNet50-based Model
 class ft_net(nn.Module):
-    def __init__(self, class_num ):
+    def __init__(self, class_num = 751):
         super(ft_net, self).__init__()
         #load the model
         model_ft = models.resnet50(pretrained=True) 
@@ -111,19 +115,20 @@ class ft_net(nn.Module):
         x = self.classifier(x) #use our classifier.
         return x
 ```
-Original ResNet50 provided by torch vision. More details can be found at [here](https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py).
 
 ```diff
 + Quick Question. Why we use AdaptiveAvgPool2d? What is the difference between the AvgPool2d and AdaptiveAvgPool2d?
 + Quick Question. Does the model have parameters now? How to intialize the parameter in the new layer?
 ```
+More details are in `model.py`. You may check it later, after you have gone through this practical.
 
 ### Part 1.3: Training (`train.py`)
-Before we start training, the first thing is how to read data and their labels from the prepared folder.
+OK. Now we have prepared the training data and defined model structure.
+Before we start training, the last thing is how to read data and their labels from the prepared folder.
 Using `torch.utils.data.DataLoader`, we can obtain two iterators `dataloaders['train']` and `dataloaders['val']` to read data and label.
 ```python
 image_datasets = {}
-image_datasets['train'] = datasets.ImageFolder(os.path.join(data_dir, 'train' + train_all),
+image_datasets['train'] = datasets.ImageFolder(os.path.join(data_dir, 'train'),
                                           data_transforms['train'])
 image_datasets['val'] = datasets.ImageFolder(os.path.join(data_dir, 'val'),
                                           data_transforms['val'])

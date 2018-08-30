@@ -1,5 +1,5 @@
 # UTS-Person-reID-Practical
-By Zhedong Zheng
+By [Zhedong Zheng](http://zdzheng.xyz/)
 
 This is a [University of Technology Sydney](https://www.uts.edu.au) computer vision practical, authored by Zhedong Zheng.
 

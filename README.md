@@ -3,7 +3,7 @@ By [Zhedong Zheng](http://zdzheng.xyz/)
 
 This is a [University of Technology Sydney](https://www.uts.edu.au) computer vision practical, authored by Zhedong Zheng.
 
-![](https://github.com/layumi/Person_reID_baseline_pytorch/blob/master/demo.png)
+![](https://github.com/layumi/Person_reID_baseline_pytorch/blob/master/show.png)
 
 Person re-ID can be viewed as an image retrieval problem. Given one query image in Camera **A**, we need to find the images of the same person in other Cameras. The key of the person re-ID is to find a discriminative representation of the person. Many recent works apply deeply learned model to extract visual features, and achieve the state-of-the-art performance.
 

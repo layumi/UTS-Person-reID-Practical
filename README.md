@@ -28,7 +28,7 @@ Check the Prerequisites. The download links for this practical are:
 - Data: [Market-1501](http://188.138.127.15:81/Datasets/Market-1501-v15.09.15.zip)
 
 ## Part 1: Training
-### Part 1.1: Prepare Data Folder
+### Part 1.1: Prepare Data Folder (`prepare_data.py`)
 You may notice that the downloaded folder is organized as:
 ```
 ├── Market/
@@ -43,7 +43,7 @@ Open and edit the script `prepare.py` in the editor. Change the fifth line in `p
 ```bash
 python prepare.py
 ```
-After runining, we create a subfolder called `pytorch` under the download folder. 
+We create a subfolder called `pytorch` under the download folder. 
 ```
 ├── Market/
 │   ├── bounding_box_test/          /* Files for testing (candidate images pool)
@@ -70,7 +70,7 @@ Now we have successfully prepared the data for `torchvision` to read the data.
 + Quick Question. How to recognize the images of the same ID?
 ```
 
-### Part 1.2: Build Neural Network
+### Part 1.2: Build Neural Network (`model.py`)
 We can use the pretrained networks, such as `AlexNet`, `VGG16`, `ResNet` and `DenseNet`. Generally, the pretrained networks help to achieve a better performance, since it perserves some good visual patterns from ImageNet[1].
 
 In pytorch, we can easily import them by two lines. For example,
@@ -82,13 +82,17 @@ model = models.resnet50(pretrained=True)
 But we need to modify the networks a little bit. There are 751 classes (different people) in Market-1501, which is different with 1,000 classes in ImageNet. So here we change the model to use our classifier.
 
 ```python
+import torch
+import torch.nn as nn
+from torchvision import models
+
 # Define the ResNet50-based Model
 class ft_net(nn.Module):
-
     def __init__(self, class_num ):
         super(ft_net, self).__init__()
-        model_ft = models.resnet50(pretrained=True) #load the model
-        # avg pooling to global pooling
+        #load the model
+        model_ft = models.resnet50(pretrained=True) 
+        # change avg pooling to global pooling
         model_ft.avgpool = nn.AdaptiveAvgPool2d((1,1))
         self.model = model_ft
         self.classifier = ClassBlock(2048, class_num) #define our classifier.
@@ -107,14 +111,65 @@ class ft_net(nn.Module):
         x = self.classifier(x) #use our classifier.
         return x
 ```
+Original ResNet50 provided by torch vision. More details can be found at [here](https://github.com/pytorch/vision/blob/master/torchvision/models/resnet.py).
 
 ```diff
 + Quick Question. Why we use AdaptiveAvgPool2d? What is the difference between the AvgPool2d and AdaptiveAvgPool2d?
++ Quick Question. Does the model have parameters now? How to intialize the parameter in the new layer?
 ```
 
+### Part 1.3: Training (`train.py`)
+Before we start training, the first thing is how to read data and their labels from the prepared folder.
+Using `torch.utils.data.DataLoader`, we can obtain two iterators `dataloaders['train']` and `dataloaders['val']` to read data and label.
+```python
+image_datasets = {}
+image_datasets['train'] = datasets.ImageFolder(os.path.join(data_dir, 'train' + train_all),
+                                          data_transforms['train'])
+image_datasets['val'] = datasets.ImageFolder(os.path.join(data_dir, 'val'),
+                                          data_transforms['val'])
 
-### Part 1.3: Training
+dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=opt.batchsize,
+                                             shuffle=True, num_workers=8) # 8 workers may work faster
+              for x in ['train', 'val']}
+dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
+```
 
+Let's train the model.
+Yes. It's only about 20 lines. Make sure you can understand every line of the code.
+```python
+            # Iterate over data.
+            for data in dataloaders[phase]:
+                # get a batch of inputs
+                inputs, labels = data
+                now_batch_size,c,h,w = inputs.shape
+                if now_batch_size<opt.batchsize: # skip the last batch
+                    continue
+                # print(inputs.shape)
+                # wrap them in Variable, if gpu is used, we transform the data to cuda.
+                if use_gpu:
+                    inputs = Variable(inputs.cuda())
+                    labels = Variable(labels.cuda())
+                else:
+                    inputs, labels = Variable(inputs), Variable(labels)
+
+                # zero the parameter gradients
+                optimizer.zero_grad()
+
+                #-------- forward --------
+                outputs = model(inputs)
+                _, preds = torch.max(outputs.data, 1)
+                loss = criterion(outputs, labels)
+
+                #-------- backward + optimize -------- 
+                # only if in training phase
+                if phase == 'train':
+                    loss.backward()
+                    optimizer.step()
+```
+```diff
++ Quick Question. 
++ Quick Question. 
+```
 
 ## Part 2: Extracting feature
 

@@ -172,11 +172,22 @@ Yes. It's only about 20 lines. Make sure you can understand every line of the co
                     optimizer.step()
 ```
 ```diff
-+ Quick Question. 
-+ Quick Question. 
++ Quick Question. Why we need optimizer.zero_grad()? What happens if we remove it?
++ Quick Question. The dimension of the outputs is batchsize*751. Why?
+```
+Every 10 training epoch, we save a snapshot and update the loss curve.
+```python
+                if epoch%10 == 9:
+                    save_network(model, epoch)
+                draw_curve(epoch)
 ```
 
-## Part 2: Extracting feature
+## Part 2: Extracting feature (`test.py`)
+In this part, we load the network (we just trained) to extract the visual feature of every image.
+```python
+
+```
+
 
 ## Part 3: Evaluation
 

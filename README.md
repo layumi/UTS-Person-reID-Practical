@@ -233,14 +233,14 @@ Note that there are two kinds of images we do not consider as right-matching ima
 ```
 
 We can use the function `compute_mAP` to obtain the final result.
-```
+```python
 CMC_tmp = compute_mAP(index, good_index, junk_index)
 ```
 
-## Part 4: A simple GUI (`python demo.py`)
+## Part 4: A simple visualization (`python demo.py`)
 In fact, it is similar to the `evaluate.py`. We just added the visualization part.
 Index is the predicted ranking list.
-```
+```python
 try: # Visualize Ranking Result 
     # Graphical User Interface is needed
     fig = plt.figure(figsize=(16,4))

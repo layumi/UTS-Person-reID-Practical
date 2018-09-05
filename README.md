@@ -2,12 +2,11 @@
 By [Zhedong Zheng](http://zdzheng.xyz/)
 
 This is a [University of Technology Sydney](https://www.uts.edu.au) computer vision practical, authored by Zhedong Zheng.
+The practical explores the basic of learning pedestrian features. In this pratical, we will learn to build a simple person re-ID system step by step. Any suggestion is welcomed.
 
 ![](https://github.com/layumi/Person_reID_baseline_pytorch/blob/master/show.png)
 
 Person re-ID can be viewed as an image retrieval problem. Given one query image in Camera **A**, we need to find the images of the same person in other Cameras. The key of the person re-ID is to find a discriminative representation of the person. Many recent works apply deeply learned model to extract visual features, and achieve the state-of-the-art performance.
-
-This practical explores the basic of learning pedestrian features. In this pratical, we will learn to build a simple person re-ID system step by step.
 
 ## Prerequisites
 - Python 3.6
@@ -24,11 +23,11 @@ python setup.py install
 ## Getting started
 Check the Prerequisites. The download links for this practical are:
 
-- Code: [Practical-Baseline](https://github.com/layumi/Person_reID_baseline_pytorch/archive/master.zip)
+- Code: [Practical-Baseline](https://github.com/layumi/Person_reID_baseline_pytorch)
 - Data: [Market-1501](http://188.138.127.15:81/Datasets/Market-1501-v15.09.15.zip)
 
 ## Part 1: Training
-### Part 1.1: Prepare Data Folder (`prepare_data.py`)
+### Part 1.1: Prepare Data Folder (`python prepare_data.py`)
 You may notice that the downloaded folder is organized as:
 ```
 ├── Market/
@@ -122,7 +121,7 @@ class ft_net(nn.Module):
 ```
 More details are in `model.py`. You may check it later, after you have gone through this practical.
 
-### Part 1.3: Training (`train.py`)
+### Part 1.3: Training (`python train.py`)
 OK. Now we have prepared the training data and defined model structure.
 Before we start training, the last thing is how to read data and their labels from the prepared folder.
 Using `torch.utils.data.DataLoader`, we can obtain two iterators `dataloaders['train']` and `dataloaders['val']` to read data and label.
@@ -182,14 +181,89 @@ Every 10 training epoch, we save a snapshot and update the loss curve.
                 draw_curve(epoch)
 ```
 
-## Part 2: Extracting feature (`test.py`)
-In this part, we load the network (we just trained) to extract the visual feature of every image.
+## Part 2: Extracting feature (`python test.py`)
+In this part, we load the network weight (we just trained) to extract the visual feature of every image.
+We need to import the model structure and then load the weight to the model.
 ```python
-
+model_structure = ft_net(751)
+model = load_network(model_structure)
+```
+For every query and gallery image, we extract the feature by simply forward the data.
+```python
+outputs = model(input_img) 
+# ---- L2-norm Feature ------
+ff = outputs.data.cpu()
+fnorm = torch.norm(ff, p=2, dim=1, keepdim=True)
+ff = ff.div(fnorm.expand_as(ff))
+```
+```diff
++ Quick Question. Why we flip the test image horizontally when testing? How to fliplr in pytorch?
++ Quick Question. Why we L2-norm the feature?
 ```
 
-
 ## Part 3: Evaluation
+Yes. Now we have the feature of every image. The only thing we need to do is matching the images by the feature.
+
+We sort the predicted similarity score.
+```python
+query = qf.view(-1,1)
+# print(query.shape)
+score = torch.mm(gf,query) # Cosine Distance
+score = score.squeeze(1).cpu()
+score = score.numpy()
+# predict index
+index = np.argsort(score)  #from small to large
+index = index[::-1]
+```
+
+Note that there are two kinds of images we do not consider as right-matching images.
+* Junk_index1 is the index of mis-detected images which contains the body parts.
+
+* Junk_index2 is the index of images which is of the same identity in the same cameras.
+
+```python
+    query_index = np.argwhere(gl==ql)
+    camera_index = np.argwhere(gc==qc)
+    # The images of the same identity in different cameras
+    good_index = np.setdiff1d(query_index, camera_index, assume_unique=True)
+    # Only part of body is detected. 
+    junk_index1 = np.argwhere(gl==-1)
+    # The images of the same identity in same cameras
+    junk_index2 = np.intersect1d(query_index, camera_index)
+```
+
+We can use the function `compute_mAP` to obtain the final result.
+```
+CMC_tmp = compute_mAP(index, good_index, junk_index)
+```
+
+## Part 4: A simple GUI (`python demo.py`)
+In fact, it is similar to the `evaluate.py`. We just added the visualization part.
+Index is the predicted ranking list.
+```
+try: # Visualize Ranking Result 
+    # Graphical User Interface is needed
+    fig = plt.figure(figsize=(16,4))
+    ax = plt.subplot(1,11,1)
+    ax.axis('off')
+    imshow(query_path,'query')
+    for i in range(10): #Show top-10 images
+        ax = plt.subplot(1,11,i+2)
+        ax.axis('off')
+        img_path, _ = image_datasets['gallery'].imgs[index[i]]
+        label = gallery_label[index[i]]
+        imshow(img_path)
+        if label == query_label:
+            ax.set_title('%d'%(i+1), color='green') # true matching
+        else:
+            ax.set_title('%d'%(i+1), color='red') # false matching
+        print(img_path)
+except RuntimeError:
+    for i in range(10):
+        img_path = image_datasets.imgs[index[i]]
+        print(img_path[0])
+    print('If you want to see the visualization of the ranking result, graphical user interface is needed.')
+```
 
 [1] Deng, Jia, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. "Imagenet: A large-scale hierarchical image database." In Computer Vision and Pattern Recognition, 2009. CVPR 2009. IEEE Conference on, pp. 248-255. Ieee, 2009.
 

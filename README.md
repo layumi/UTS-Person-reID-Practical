@@ -1,7 +1,7 @@
 # UTS-Person-reID-Practical
 By [Zhedong Zheng](http://zdzheng.xyz/)
 
-This repo is no longer maintained. You may check the latest version at [here] (https://github.com/layumi/Person_reID_baseline_pytorch/tree/master/tutorial).
+**This repo is no longer maintained. You may check the latest version at [here](https://github.com/layumi/Person_reID_baseline_pytorch/tree/master/tutorial).**
 
 This is a [University of Technology Sydney](https://www.uts.edu.au) computer vision practical, authored by Zhedong Zheng.
 The practical explores the basic of learning pedestrian features. In this pratical, we will learn to build a simple person re-ID system step by step. Any suggestion is welcomed.
